@@ -13,6 +13,7 @@ import InvoiceDashboard from './modules/T2B/InvoiceDashboard'
 
 function App() {
   const [activeView, setActiveView] = useState('dashboard')
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   const renderContent = () => {
     switch (activeView) {
@@ -34,8 +35,13 @@ function App() {
   }
 
   return (
-    <div className="app-container">
-      <Sidebar activeView={activeView} setActiveView={setActiveView} />
+    <div className={`app-container ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+      <Sidebar
+        activeView={activeView}
+        setActiveView={setActiveView}
+        isCollapsed={sidebarCollapsed}
+        setIsCollapsed={setSidebarCollapsed}
+      />
       <main className="main-content">
         <Header />
         <div className="page-content">

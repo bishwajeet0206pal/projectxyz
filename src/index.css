@@ -217,11 +217,56 @@ a:hover {
   display: flex;
   flex-direction: column;
   z-index: 100;
+  transition: width 0.25s ease;
+}
+
+.sidebar.collapsed {
+  width: 72px;
+}
+
+.sidebar-collapsed .main-content {
+  margin-left: 72px;
 }
 
 .sidebar-header {
   padding: var(--spacing-5);
   border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-toggle {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.sidebar-toggle:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.sidebar.collapsed .sidebar-header {
+  justify-content: center;
+  padding: var(--spacing-4);
+}
+
+.sidebar.collapsed .sidebar-toggle {
+  position: absolute;
+  right: -14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--color-bg-secondary);
+  box-shadow: var(--shadow-md);
 }
 
 .sidebar-logo {
@@ -307,6 +352,20 @@ a:hover {
   margin-bottom: 2px;
   font-size: var(--font-size-sm);
   font-weight: 500;
+}
+
+.sidebar.collapsed .nav-item {
+  justify-content: center;
+  padding: var(--spacing-3);
+}
+
+.sidebar.collapsed .nav-section {
+  margin-bottom: var(--spacing-3);
+}
+
+.sidebar.collapsed .nav-label,
+.sidebar.collapsed .nav-badge {
+  display: none;
 }
 
 .nav-item:hover {
@@ -553,7 +612,6 @@ a:hover {
   box-shadow: var(--shadow-card);
   transition: all var(--transition-normal);
   position: relative;
-  overflow: hidden;
 }
 
 /* Info tooltip trigger */

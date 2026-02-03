@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { Icons } from './Icons'
 
-function Sidebar({ activeView, setActiveView }) {
+function Sidebar({ activeView, setActiveView, isCollapsed, setIsCollapsed }) {
     const [collapsedSections, setCollapsedSections] = useState({
         lifecycle: false,
         quickActions: false
     })
 
     const toggleSection = (section) => {
+        if (isCollapsed) return // Don't toggle sections when sidebar is collapsed
         setCollapsedSections(prev => ({
             ...prev,
             [section]: !prev[section]
@@ -27,12 +28,22 @@ function Sidebar({ activeView, setActiveView }) {
     const lifecycleItems = navItems.filter(item => item.section === 'lifecycle')
 
     return (
-        <aside className="sidebar">
+        <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
             <div className="sidebar-header">
                 <div className="sidebar-logo">
                     <div className="sidebar-logo-icon">P</div>
-                    <span className="sidebar-logo-text">ProjectX</span>
+                    {!isCollapsed && <span className="sidebar-logo-text">ProjectX</span>}
                 </div>
+                <button
+                    className="sidebar-toggle"
+                    onClick={() => setIsCollapsed(!isCollapsed)}
+                    title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                >
+                    <Icons.ChevronLeft style={{
+                        transform: isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)',
+                        transition: 'transform 0.2s ease'
+                    }} />
+                </button>
             </div>
 
             <nav className="sidebar-nav">
@@ -45,9 +56,10 @@ function Sidebar({ activeView, setActiveView }) {
                                 key={item.id}
                                 className={`nav-item ${activeView === item.id ? 'active' : ''}`}
                                 onClick={() => setActiveView(item.id)}
+                                title={isCollapsed ? item.label : undefined}
                             >
                                 <span className="nav-icon"><IconComponent /></span>
-                                <span>{item.label}</span>
+                                {!isCollapsed && <span className="nav-label">{item.label}</span>}
                             </div>
                         )
                     })}
@@ -55,17 +67,19 @@ function Sidebar({ activeView, setActiveView }) {
 
                 {/* Lifecycle Stages - Collapsible */}
                 <div className="nav-section">
-                    <div
-                        className="nav-section-title collapsible"
-                        onClick={() => toggleSection('lifecycle')}
-                    >
-                        <span>Lifecycle Stages</span>
-                        <Icons.ChevronDown style={{
-                            transform: collapsedSections.lifecycle ? 'rotate(-90deg)' : 'rotate(0deg)',
-                            transition: 'transform 0.2s ease'
-                        }} />
-                    </div>
-                    <div className={`nav-section-content ${collapsedSections.lifecycle ? 'collapsed' : ''}`}>
+                    {!isCollapsed && (
+                        <div
+                            className="nav-section-title collapsible"
+                            onClick={() => toggleSection('lifecycle')}
+                        >
+                            <span>Lifecycle Stages</span>
+                            <Icons.ChevronDown style={{
+                                transform: collapsedSections.lifecycle ? 'rotate(-90deg)' : 'rotate(0deg)',
+                                transition: 'transform 0.2s ease'
+                            }} />
+                        </div>
+                    )}
+                    <div className={`nav-section-content ${!isCollapsed && collapsedSections.lifecycle ? 'collapsed' : ''}`}>
                         {lifecycleItems.map(item => {
                             const IconComponent = item.icon
                             return (
@@ -73,10 +87,15 @@ function Sidebar({ activeView, setActiveView }) {
                                     key={item.id}
                                     className={`nav-item ${item.color} ${activeView === item.id ? 'active' : ''}`}
                                     onClick={() => setActiveView(item.id)}
+                                    title={isCollapsed ? item.label : undefined}
                                 >
                                     <span className="nav-icon"><IconComponent /></span>
-                                    <span>{item.label}</span>
-                                    {item.badge && <span className="nav-badge">{item.badge}</span>}
+                                    {!isCollapsed && (
+                                        <>
+                                            <span className="nav-label">{item.label}</span>
+                                            {item.badge && <span className="nav-badge">{item.badge}</span>}
+                                        </>
+                                    )}
                                 </div>
                             )
                         })}
@@ -85,54 +104,62 @@ function Sidebar({ activeView, setActiveView }) {
 
                 {/* Quick Actions - Collapsible */}
                 <div className="nav-section">
-                    <div
-                        className="nav-section-title collapsible"
-                        onClick={() => toggleSection('quickActions')}
-                    >
-                        <span>Quick Actions</span>
-                        <Icons.ChevronDown style={{
-                            transform: collapsedSections.quickActions ? 'rotate(-90deg)' : 'rotate(0deg)',
-                            transition: 'transform 0.2s ease'
-                        }} />
-                    </div>
-                    <div className={`nav-section-content ${collapsedSections.quickActions ? 'collapsed' : ''}`}>
-                        <div className="nav-item">
+                    {!isCollapsed && (
+                        <div
+                            className="nav-section-title collapsible"
+                            onClick={() => toggleSection('quickActions')}
+                        >
+                            <span>Quick Actions</span>
+                            <Icons.ChevronDown style={{
+                                transform: collapsedSections.quickActions ? 'rotate(-90deg)' : 'rotate(0deg)',
+                                transition: 'transform 0.2s ease'
+                            }} />
+                        </div>
+                    )}
+                    <div className={`nav-section-content ${!isCollapsed && collapsedSections.quickActions ? 'collapsed' : ''}`}>
+                        <div className="nav-item" title={isCollapsed ? 'Settings' : undefined}>
                             <span className="nav-icon"><Icons.Settings /></span>
-                            <span>Settings</span>
+                            {!isCollapsed && <span className="nav-label">Settings</span>}
                         </div>
-                        <div className="nav-item">
+                        <div className="nav-item" title={isCollapsed ? 'Analytics' : undefined}>
                             <span className="nav-icon"><Icons.BarChart /></span>
-                            <span>Analytics</span>
+                            {!isCollapsed && <span className="nav-label">Analytics</span>}
                         </div>
-                        <div className="nav-item">
+                        <div className="nav-item" title={isCollapsed ? 'Alerts' : undefined}>
                             <span className="nav-icon"><Icons.Bell /></span>
-                            <span>Alerts</span>
-                            <span className="nav-badge" style={{ background: 'var(--color-danger)' }}>3</span>
+                            {!isCollapsed && (
+                                <>
+                                    <span className="nav-label">Alerts</span>
+                                    <span className="nav-badge" style={{ background: 'var(--color-danger)' }}>3</span>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
             </nav>
 
-            <div style={{
-                padding: 'var(--spacing-4)',
-                borderTop: '1px solid var(--color-border)',
-                fontSize: 'var(--font-size-xs)',
-                color: 'var(--color-text-muted)'
-            }}>
-                <div style={{ marginBottom: 'var(--spacing-2)', fontWeight: 500 }}>
-                    Data Sync
+            {!isCollapsed && (
+                <div style={{
+                    padding: 'var(--spacing-4)',
+                    borderTop: '1px solid var(--color-border)',
+                    fontSize: 'var(--font-size-xs)',
+                    color: 'var(--color-text-muted)'
+                }}>
+                    <div style={{ marginBottom: 'var(--spacing-2)', fontWeight: 500 }}>
+                        Data Sync
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
+                        <span style={{
+                            width: '6px',
+                            height: '6px',
+                            background: 'var(--color-success)',
+                            borderRadius: '50%',
+                            animation: 'pulse 2s infinite'
+                        }}></span>
+                        Live • Last sync: 2 min ago
+                    </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
-                    <span style={{
-                        width: '6px',
-                        height: '6px',
-                        background: 'var(--color-success)',
-                        borderRadius: '50%',
-                        animation: 'pulse 2s infinite'
-                    }}></span>
-                    Live • Last sync: 2 min ago
-                </div>
-            </div>
+            )}
         </aside>
     )
 }
